@@ -1,0 +1,32 @@
+# Synco backend — Render blueprint (no secret VALUES here; fill them in the dashboard).
+# Dashboard → New → Web Service → point at this repo, or `render blueprint deploy`.
+services:
+  - type: web
+    name: synco-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # Render injects PORT automatically; code falls back to 8000 locally.
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:admin@synco.app
+      # Set AFTER Vercel deploy, e.g. https://synco-app.vercel.app (no trailing slash)
+      - key: FRONTEND_URL
+        sync: false
+      - key: NOTIFY_WINDOW_MINUTES
+        value: "10"

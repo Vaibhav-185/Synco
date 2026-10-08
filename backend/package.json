@@ -1,7 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Synco backend — Express API for timetable AI, friends, groups, push",
+  "engines": { "node": ">=20" },
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
