@@ -28,6 +28,13 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
     });
   };
 
+  // Only render rows that contain at least one slot: fully empty hours
+  // (early mornings, late evenings) collapse away instead of filling the
+  // table with blank rows.
+  const visibleHours = HOURS.filter(hour =>
+    DAYS.some(day => getSlotsForCell(day, hour).length > 0)
+  );
+
   const getSlotClass = (slot) => {
     if (!slot) return 'tt-slot free';
     if (slot.type === 'break') return 'tt-slot break';
@@ -47,17 +54,13 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
           </tr>
         </thead>
         <tbody>
-          {HOURS.map(hour => (
+          {visibleHours.map(hour => (
             <tr key={hour}>
               <td style={{ fontWeight: 600 }}>{hour}</td>
               {DAYS.map(day => {
                 const cellSlots = getSlotsForCell(day, hour);
                 if (cellSlots.length === 0) {
-                  return (
-                    <td key={day}>
-                      <div className="tt-slot free">·</div>
-                    </td>
-                  );
+                  return <td key={day}></td>;
                 }
                 const rawSlot = cellSlots[0];
                 const slot = resolveSlotDisplay(rawSlot);
@@ -79,9 +82,6 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
                       </span>
                       {slot.faculty && (
                         <span style={{ fontSize: '9px', opacity: 0.8 }}>{slot.faculty}</span>
-                      )}
-                      {onSlotClick && (
-                        <span style={{ fontSize: '8px', opacity: 0.7 }}>✎</span>
                       )}
                     </div>
                   </td>
