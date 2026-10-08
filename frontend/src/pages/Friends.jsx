@@ -45,8 +45,11 @@ export default function Friends() {
   const fetchFriends = async () => {
     try {
       const res = await axios.get(`${API}/friends`);
-      setFriends(res.data);
-      res.data.forEach(f => fetchFriendStatus(f.friend._id));
+      // Drop malformed entries (missing counterpart) so one bad record
+      // can never blank the page.
+      const list = (res.data || []).filter(f => f && f.friend && f.friend._id);
+      setFriends(list);
+      list.forEach(f => fetchFriendStatus(f.friend._id));
     } catch (err) { console.error(err); }
   };
 
@@ -316,10 +319,10 @@ export default function Friends() {
             return (
               <div key={friendshipId}>
               <div className="friend-row">
-                <div className="friend-av">{friend.displayName.slice(0,2).toUpperCase()}</div>
+                <div className="friend-av">{(friend.displayName || '?').slice(0,2).toUpperCase()}</div>
                 <div className="friend-info">
-                  <div className="friend-name">{friend.displayName}</div>
-                  <div className="friend-un">@{friend.username}</div>
+                  <div className="friend-name">{friend.displayName || 'Unknown user'}</div>
+                  <div className="friend-un">@{friend.username || 'unknown'}</div>
                 </div>
                 <div>
                   {s ? (

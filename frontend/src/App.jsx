@@ -8,6 +8,7 @@ import Friends   from './pages/Friends';
 import Groups    from './pages/Groups';
 import Privacy   from './pages/Privacy';
 import Terms     from './pages/Terms';
+import ErrorBoundary from './components/ErrorBoundary';
 import Navbar    from './components/Navbar';
 
 function PrivateRoute({ children }) {
@@ -30,7 +31,7 @@ function App() {
             <PrivateRoute><Navbar /><Dashboard /></PrivateRoute>
           }/>
           <Route path="/friends" element={
-            <PrivateRoute><Navbar /><Friends /></PrivateRoute>
+            <PrivateRoute><Navbar /><ErrorBoundary><Friends /></ErrorBoundary></PrivateRoute>
           }/>
           <Route path="/groups" element={
             <PrivateRoute><Navbar /><Groups /></PrivateRoute>

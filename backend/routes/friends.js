@@ -86,12 +86,17 @@ router.get('/', auth, async (req, res) => {
       status: 'accepted'
     }).populate('requester', '-password').populate('addressee', '-password');
 
-    // Return the "other person" in each friendship
-    const friends = friendships.map(f => {
-      const friend = f.requester._id.toString() === req.userId
-        ? f.addressee : f.requester;
-      return { friendshipId: f._id, friend };
-    });
+    // Return the "other person" in each friendship. Skip rows whose
+    // counterpart no longer exists (deleted user) instead of throwing.
+    const friends = friendships
+      .filter(f => f.requester && f.addressee)
+      .map(f => {
+        const friend = f.requester._id.toString() === req.userId
+          ? f.addressee : f.requester;
+        if (!friend || !friend._id) return null;
+        return { friendshipId: f._id, friend };
+      })
+      .filter(Boolean);
 
     res.json(friends);
   } catch (err) {
