@@ -5,6 +5,8 @@ import Signup    from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Friends   from './pages/Friends';
 import Groups    from './pages/Groups';
+import Privacy   from './pages/Privacy';
+import Terms     from './pages/Terms';
 import Navbar    from './components/Navbar';
 
 function PrivateRoute({ children }) {
@@ -20,6 +22,8 @@ function App() {
         <Routes>
           <Route path="/login"  element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms"   element={<Terms />} />
           <Route path="/" element={
             <PrivateRoute><Navbar /><Dashboard /></PrivateRoute>
           }/>

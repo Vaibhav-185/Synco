@@ -57,6 +57,7 @@ export default function Signup() {
           </button>
         </form>
         <p className="auth-switch">Already have an account? <Link to="/login">Sign in</Link></p>
+        <p className="legal-footer"><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link></p>
       </div>
     </div>
   );

@@ -193,13 +193,13 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
                     {hasParallelLabs && (
                       <div style={{ marginTop: '6px', fontSize: '11px', background: 'rgba(0,0,0,0.3)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.08)' }}>
                         <div style={{ fontSize: '10px', color: 'var(--muted)', fontWeight: 700, marginBottom: '4px' }}>
-                          ⚡ PARALLEL BATCH LABS IN THIS CELL:
+                          PARALLEL BATCH LABS IN THIS CELL:
                         </div>
                         {slot.parallelLabs.map((pl, lIdx) => (
                           <div key={lIdx} style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px' }}>
                             <span className={`pill ${slot.batch === pl.batch ? 'green' : 'gray'}`}>{pl.batch}</span>
                             <span style={{ flex: 1, color: 'var(--text)' }}>{pl.subject}</span>
-                            <span style={{ fontSize: '10px', color: 'var(--accent)' }}>{pl.faculty || '—'}</span>
+                            <span style={{ fontSize: '10px', color: 'var(--accent)' }}>{pl.faculty || 'n/a'}</span>
                             <span style={{ fontSize: '10px', color: 'var(--muted)' }}>[{pl.room}]</span>
                           </div>
                         ))}
@@ -255,7 +255,7 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
         <div style={{ display: 'flex', gap: '10px' }}>
           <button className="btn" onClick={onCancel} disabled={saving}>Discard</button>
           <button className="btn accent" onClick={handleConfirmSave} disabled={saving || slots.length === 0}>
-            {saving ? 'Saving...' : '✅ Confirm & Save Schedule'}
+            {saving ? 'Saving...' : 'Confirm and Save Schedule'}
           </button>
         </div>
       </div>

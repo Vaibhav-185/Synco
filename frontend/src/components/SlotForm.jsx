@@ -152,13 +152,13 @@ export default function SlotForm({ mode = 'add', slot = null, onSaved, onCancel,
                 <button type="button" className="btn sm" onClick={() => setConfirmDelete(false)} disabled={saving}>Keep</button>
               </div>
             ) : (
-              <button type="button" className="btn danger sm" onClick={handleDelete} disabled={saving}>🗑 Delete</button>
+              <button type="button" className="btn danger sm" onClick={handleDelete} disabled={saving}>Delete</button>
             )
           ) : <span />}
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" className="btn" onClick={onCancel} disabled={saving}>Cancel</button>
             <button type="submit" className="btn accent" disabled={saving}>
-              {saving ? 'Saving...' : (mode === 'edit' ? '✅ Save changes' : '+ Add slot')}
+              {saving ? 'Saving...' : (mode === 'edit' ? 'Save changes' : '+ Add slot')}
             </button>
           </div>
         </div>

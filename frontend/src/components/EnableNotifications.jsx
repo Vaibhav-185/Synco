@@ -38,8 +38,8 @@ export default function EnableNotifications() {
         setPermission(perm);
         if (perm !== 'granted') {
           setMsg(perm === 'denied'
-            ? 'Blocked — enable notifications for this site in your browser settings.'
-            : 'Dismissed — you can enable them anytime.');
+            ? 'Blocked: enable notifications for this site in your browser settings.'
+            : 'Dismissed: you can enable them anytime.');
           setBusy(false);
           return;
         }
@@ -62,13 +62,13 @@ export default function EnableNotifications() {
       // 5. Prove end-to-end delivery with a test push
       try {
         await axios.post(`${API}/notifications/test`);
-        setMsg('✅ Notifications enabled — check for a test notification!');
+        setMsg('Notifications enabled. A test notification was sent.');
       } catch {
-        setMsg('✅ Subscribed. (Test push could not be sent — it will arrive before your next class.)');
+        setMsg('Subscribed. Reminders will arrive before your next class.');
       }
     } catch (err) {
       const detail = err.response?.data?.message || err.message;
-      setMsg('❌ ' + detail);
+      setMsg('Error: ' + detail);
     }
     setBusy(false);
   };
@@ -84,7 +84,7 @@ export default function EnableNotifications() {
       await axios.delete(`${API}/notifications/subscribe`);
       setMsg('Notifications turned off.');
     } catch (err) {
-      setMsg('❌ ' + (err.response?.data?.message || err.message));
+      setMsg('Error: ' + (err.response?.data?.message || err.message));
     }
     setBusy(false);
   };
@@ -106,7 +106,7 @@ export default function EnableNotifications() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <button className="btn sm" onClick={unsubscribeFlow} disabled={busy}>
-          {busy ? 'Working...' : '🔔 Turn off class alerts'}
+          {busy ? 'Working...' : 'Turn off class alerts'}
         </button>
         {msg && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{msg}</span>}
       </div>
@@ -116,7 +116,7 @@ export default function EnableNotifications() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <button className="btn accent sm" onClick={subscribeFlow} disabled={busy}>
-        {busy ? 'Enabling...' : '🔔 Enable class alerts'}
+        {busy ? 'Enabling...' : 'Enable class alerts'}
       </button>
       {msg && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{msg}</span>}
     </div>

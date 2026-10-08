@@ -76,7 +76,6 @@ body { background: var(--bg); color: var(--text); font-family: system-ui, sans-s
 .friend-actions { display: flex; gap: 5px; }
 .upload-zone { border: 1.5px dashed rgba(255,255,255,.15); border-radius: 14px; padding: 2rem; text-align: center; cursor: pointer; transition: all .2s; }
 .upload-zone:hover { border-color: rgba(200,240,74,.4); background: rgba(200,240,74,.04); }
-.upload-icon { font-size: 28px; margin-bottom: 8px; }
 .upload-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
 .upload-sub { font-size: 12px; color: var(--muted); }
 .loading { display: flex; align-items: center; justify-content: center; height: 100vh; color: var(--muted); font-size: 16px; }
@@ -86,3 +85,6 @@ body { background: var(--bg); color: var(--text); font-family: system-ui, sans-s
 .pill.gray { background: var(--bg3); color: var(--muted); }
 .form-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
 .form-row .field { flex: 1; min-width: 100px; margin-bottom: 0; }
+.legal-footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 1.25rem; }
+.legal-footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+.legal-footer a:hover { color: var(--text); }

@@ -146,13 +146,13 @@ export default function Groups() {
                 style={{width:'100%',marginTop:'1rem',padding:'10px'}}
                 onClick={() => findFreeSlots(activeGroup._id)}
                 disabled={loading}>
-                {loading ? 'Finding...' : '✨ Find common free slots'}
+                {loading ? 'Finding...' : 'Find common free slots'}
               </button>
             </div>
 
             {freeSlots && (
               <div className="card" style={{marginTop:'1rem'}}>
-                <div className="card-title">Common free slots — {freeSlots.groupName}</div>
+                <div className="card-title">Common free slots: {freeSlots.groupName}</div>
                 <div style={{fontSize:12,color:'var(--muted)',marginBottom:12}}>
                   {freeSlots.totalMembers} members · teal = everyone free
                 </div>
@@ -186,7 +186,6 @@ export default function Groups() {
         ) : (
           <div className="card">
             <div className="empty">
-              <div style={{fontSize:24,marginBottom:8}}>✦</div>
               <p>Select a group to manage members and find free slots</p>
             </div>
           </div>

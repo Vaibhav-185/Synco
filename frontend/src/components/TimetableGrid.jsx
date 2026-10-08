@@ -66,7 +66,7 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
                   <td key={day}>
                     <div
                       className={getSlotClass(slot) + (onSlotClick ? ' tt-slot-clickable' : '')}
-                      title={`${slot.subject} ${slot.faculty ? '(' + slot.faculty + ')' : ''} ${slot.note ? '[' + slot.note + ']' : ''}${onSlotClick ? ' — click to edit' : ''}`}
+                      title={`${slot.subject} ${slot.faculty ? '(' + slot.faculty + ')' : ''} ${slot.note ? '[' + slot.note + ']' : ''}${onSlotClick ? ', click to edit' : ''}`}
                       onClick={onSlotClick ? () => onSlotClick(rawSlot) : undefined}
                       role={onSlotClick ? 'button' : undefined}
                       style={{

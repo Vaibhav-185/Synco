@@ -56,7 +56,7 @@ export default function Friends() {
       await axios.post(`${API}/friends/request`, { addresseeId });
       setSearchResult(null);
       setSearchQ('');
-      setSearchMsg('✅ Friend request sent!');
+      setSearchMsg('Friend request sent.');
     } catch (err) {
       setSearchMsg(err.response?.data?.message || 'Error sending request');
     }
@@ -81,7 +81,7 @@ export default function Friends() {
 
       {pending.length > 0 && (
         <div className="card">
-          <div className="card-title">🔔 Friend requests ({pending.length})</div>
+          <div className="card-title">Friend requests ({pending.length})</div>
           {pending.map(req => (
             <div key={req._id} className="friend-row">
               <div className="friend-av">{req.requester.displayName.slice(0,2).toUpperCase()}</div>
@@ -114,7 +114,7 @@ export default function Friends() {
         </div>
         {searchMsg && (
           <div style={{marginTop:8,fontSize:13,
-            color:searchMsg.startsWith('✅') ? 'var(--accent)' : '#f09ab5'}}>
+            color:(searchMsg.includes('sent') || searchMsg === '') ? 'var(--accent)' : '#f09ab5'}}>
             {searchMsg}
           </div>
         )}
@@ -134,7 +134,6 @@ export default function Friends() {
         <div className="card-title">My friends ({friends.length})</div>
         {friends.length === 0 ? (
           <div className="empty">
-            <div style={{fontSize:24,marginBottom:8}}>👥</div>
             <p>No friends yet. Search a username above to add someone!</p>
           </div>
         ) : (
@@ -150,7 +149,7 @@ export default function Friends() {
                 <div>
                   {s ? (
                     <span className={`status-badge ${s.inClass ? 'busy' : 'free'}`}>
-                      {s.inClass ? '🔴 In ' + s.currentClass?.subject : '🟢 Free'}
+                      {s.inClass ? 'In ' + s.currentClass?.subject : 'Free'}
                     </span>
                   ) : (
                     <span className="pill gray">Loading...</span>

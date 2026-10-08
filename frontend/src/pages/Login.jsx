@@ -43,6 +43,7 @@ export default function Login() {
           </button>
         </form>
         <p className="auth-switch">No account? <Link to="/signup">Create one</Link></p>
+        <p className="legal-footer"><Link to="/privacy">Privacy</Link><Link to="/terms">Terms</Link></p>
       </div>
     </div>
   );

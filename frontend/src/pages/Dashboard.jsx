@@ -52,10 +52,10 @@ export default function Dashboard() {
       });
       if (res.data.preview) {
         setPreviewData(res.data);
-        setMessage('🔍 AI Extracted your timetable. Please review and confirm below.');
+        setMessage('Review the extracted timetable below, then confirm to save.');
       }
     } catch (err) {
-      setMessage('❌ Upload failed: ' + (err.response?.data?.message || err.message));
+      setMessage('Upload failed: ' + (err.response?.data?.message || err.message));
     }
     setUploading(false);
   };
@@ -63,14 +63,14 @@ export default function Dashboard() {
   const handleConfirmSuccess = (savedSlots) => {
     setSlots(savedSlots);
     setPreviewData(null);
-    setMessage('✅ Timetable saved successfully!');
+    setMessage('Timetable saved successfully!');
     fetchStatus();
   };
 
   // After any manual slot mutation: refresh grid + status (savedSlot null => deleted)
   const handleSlotSaved = () => {
     setSlotModal(null);
-    setMessage('✅ Schedule updated.');
+    setMessage('Schedule updated.');
     fetchSlots();
     fetchStatus();
   };
@@ -81,7 +81,7 @@ export default function Dashboard() {
     <div className="page">
       <div className="page-header">
         <div>
-          <div className="page-title">Welcome back, {user?.displayName} 👋</div>
+          <div className="page-title">Welcome back, {user?.displayName}</div>
           <div className="page-sub">Your timetable dashboard</div>
         </div>
         <button className="btn accent" onClick={() => setSlotModal({ mode: 'add' })} disabled={!!previewData}>
@@ -103,11 +103,11 @@ export default function Dashboard() {
           <div className="card-row">
             <div>
               <div style={{fontSize:12,color:'var(--muted)',marginBottom:4}}>
-                RIGHT NOW — {status.day}, {status.currentTime}
+                Right now: {status.day}, {status.currentTime}
               </div>
               <div style={{display:'flex',alignItems:'center',gap:10}}>
                 <span className={`status-badge ${status.inClass ? 'busy' : 'free'}`}>
-                  {status.inClass ? '🔴 In ' + status.currentClass?.subject : '🟢 Free right now'}
+                  {status.inClass ? 'In ' + status.currentClass?.subject : 'Free right now'}
                 </span>
                 {status.nextClass && (
                   <span style={{fontSize:12,color:'var(--muted)'}}>
@@ -133,7 +133,6 @@ export default function Dashboard() {
           <div className="card-title">Upload timetable photo</div>
           <label htmlFor="tt-upload">
             <div className="upload-zone">
-              <div className="upload-icon">📷</div>
               <div className="upload-title">
                 {uploading ? 'Reading your timetable with Gemini Vision...' : 'Click to upload your timetable photo'}
               </div>
@@ -146,7 +145,7 @@ export default function Dashboard() {
             style={{display:'none'}} onChange={handleUpload} disabled={uploading} />
           {message && (
             <div style={{marginTop:10,fontSize:13,
-              color:message.startsWith('✅') || message.startsWith('🔍') ? 'var(--accent)' : '#f09ab5'}}>
+              color:(message.includes('failed') || message.includes('discarded')) ? '#f09ab5' : 'var(--accent)'}}>
               {message}
             </div>
           )}
@@ -176,7 +175,6 @@ export default function Dashboard() {
         !previewData && (
           <div className="card">
             <div className="empty">
-              <div style={{fontSize:28,marginBottom:8}}>📅</div>
               <p>No timetable yet. Upload a photo above to get started!</p>
             </div>
           </div>
