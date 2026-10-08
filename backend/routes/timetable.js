@@ -9,9 +9,18 @@ const { normalizeTimetableData, normalizeTime } = require('../services/timetable
 const { resolveBatchView } = require('../services/batchView');
 
 // ── MULTER SETUP ──────────────────────────────────────────
+// Absolute destination (cwd-independent) + sanitized filenames so a hostile
+// originalname can't traverse paths. Temp files are deleted after extraction.
+const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
+try { fs.mkdirSync(UPLOAD_DIR, { recursive: true }); } catch (e) { /* ignore */ }
+function sanitizeName(name) {
+  return path.basename(String(name || 'timetable'))
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .slice(0, 100) || 'timetable';
+}
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'uploads/'),
-  filename:    (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
+  filename:    (req, file, cb) => cb(null, `${Date.now()}-${sanitizeName(file.originalname)}`)
 });
 const upload = multer({
   storage,
