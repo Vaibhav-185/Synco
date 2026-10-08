@@ -45,7 +45,7 @@ export default function TimetableGrid({ slots = [], onSlotClick, highlightDay })
   };
 
   return (
-    <div className="tt-wrap">
+    <div className="tt-wrap tt-week">
       <table className="tt-table">
         <thead>
           <tr>
@@ -74,18 +74,18 @@ export default function TimetableGrid({ slots = [], onSlotClick, highlightDay })
                       onClick={onSlotClick ? () => onSlotClick(rawSlot) : undefined}
                       role={onSlotClick ? 'button' : undefined}
                       style={{
-                        flexDirection: 'column', padding: '2px 4px', lineHeight: 1.1,
+                        flexDirection: 'column', padding: '4px 6px', lineHeight: 1.25,
                         ...(onSlotClick ? { cursor: 'pointer' } : {})
                       }}
                     >
-                      <span style={{ fontWeight: 600, fontSize: '12px' }}>
-                        {slot.subject.length > 12 ? slot.subject.slice(0, 11) + '…' : slot.subject}
+                      <span className="tt-subject">
+                        {slot.subject}
                       </span>
                       {!['class', 'break'].includes(slot.type) && (
                         <span className="slot-kind">{slot.type}</span>
                       )}
                       {slot.faculty && (
-                        <span style={{ fontSize: '9px', opacity: 0.8 }}>{slot.faculty}</span>
+                        <span className="tt-faculty">{slot.faculty}</span>
                       )}
                     </div>
                   </td>
