@@ -114,7 +114,7 @@ export default function Friends() {
         </div>
         {searchMsg && (
           <div style={{marginTop:8,fontSize:13,
-            color:(searchMsg.includes('sent') || searchMsg === '') ? 'var(--accent)' : '#f09ab5'}}>
+            color:(searchMsg.includes('sent') || searchMsg === '') ? 'var(--accent)' : 'var(--text)'}}>
             {searchMsg}
           </div>
         )}

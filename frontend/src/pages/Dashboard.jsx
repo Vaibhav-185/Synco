@@ -145,7 +145,7 @@ export default function Dashboard() {
             style={{display:'none'}} onChange={handleUpload} disabled={uploading} />
           {message && (
             <div style={{marginTop:10,fontSize:13,
-              color:(message.includes('failed') || message.includes('discarded')) ? '#f09ab5' : 'var(--accent)'}}>
+              color:(message.includes('failed') || message.includes('discarded')) ? 'var(--text)' : 'var(--accent)'}}>
               {message}
             </div>
           )}

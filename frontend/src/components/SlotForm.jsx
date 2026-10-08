@@ -147,7 +147,7 @@ export default function SlotForm({ mode = 'add', slot = null, onSaved, onCancel,
           {mode === 'edit' ? (
             confirmDelete ? (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <span style={{ fontSize: 12, color: '#f09ab5' }}>Delete this slot permanently?</span>
+                <span style={{ fontSize: 12, color: 'var(--text)' }}>Delete this slot permanently?</span>
                 <button type="button" className="btn danger sm" onClick={handleDelete} disabled={saving}>Yes, delete</button>
                 <button type="button" className="btn sm" onClick={() => setConfirmDelete(false)} disabled={saving}>Keep</button>
               </div>
