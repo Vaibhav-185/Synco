@@ -2,7 +2,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 const HOURS = [];
 for (let h = 8; h <= 20; h++) HOURS.push(`${String(h).padStart(2, '0')}:00`);
 
-function resolveSlotDisplay(slot) {
+export function resolveSlotDisplay(slot) {
   if (!slot) return null;
   if (slot.parallelLabs && slot.parallelLabs.length > 0 && slot.selectedBatch) {
     const matched = slot.parallelLabs.find(l => l.batch.toUpperCase() === slot.selectedBatch.toUpperCase());

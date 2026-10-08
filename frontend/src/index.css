@@ -118,12 +118,6 @@ button, input, select { font-family: inherit; }
 .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
 .status-badge.free { background: var(--accent-soft); color: var(--text); border: 1px solid var(--accent); }
 .status-badge.busy { background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent); }
-.stat-strip { display: flex; align-items: center; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: .9rem 1.25rem; margin-bottom: 1rem; flex-wrap: wrap; box-shadow: var(--shadow); }
-.stat-strip > * { padding: 0 1.25rem; }
-.stat-strip > *:first-child { padding-left: 0; }
-.stat-strip > *:last-child { padding-right: 0; }
-.stat-strip > * + * { border-left: 1px solid var(--border); }
-.stat-strip .stat-note { font-size: 13px; color: var(--muted); }
 .friend-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .friend-row:last-child { border-bottom: none; }
 .friend-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; background: var(--accent-soft); color: var(--text); }
@@ -146,10 +140,43 @@ button, input, select { font-family: inherit; }
 .legal-footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
 .legal-footer a:hover { color: var(--text); }
 
+/* ── Dashboard: timetable-first ──────────────────────────── */
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn.disabled { opacity: .5; }
+.alerts-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: .15rem 0; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.alerts-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.flash-note { font-size: 13px; color: var(--accent); margin-bottom: 1rem; }
+.flash-note.err { color: var(--error); }
+.hero { margin: 0 0 1.5rem; }
+.hero-kicker { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
+.hero-title { font-size: 28px; font-weight: 700; letter-spacing: -.5px; line-height: 1.15; overflow-wrap: anywhere; }
+.hero-meta { font-size: 14px; color: var(--muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.hero-sub { font-size: 14px; margin-top: 6px; color: var(--text); }
+.hero-eta { color: var(--accent); font-weight: 600; }
+.schedule-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 .5rem; }
+.section-title { font-size: 19px; font-weight: 600; }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 2px; gap: 2px; }
+.seg button { border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; padding: 5px 14px; border-radius: 8px; cursor: pointer; }
+.seg button.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); font-weight: 600; }
+.agenda { border-top: 1px solid var(--border); }
+.agenda-row { display: flex; gap: 12px; align-items: center; padding: 10px 8px; border-bottom: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+.agenda-row:hover { background: var(--surface-2); }
+.agenda-row.now { background: var(--accent-soft); }
+.agenda-time { min-width: 96px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.agenda-end { font-size: 11px; font-weight: 500; color: var(--muted); margin-top: 1px; }
+.agenda-main { flex: 1; min-width: 0; }
+.agenda-subject { font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.agenda-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.agenda-row.is-break .agenda-subject { font-weight: 500; color: var(--muted); }
+.agenda-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); background: var(--surface); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.agenda-tag.muted { color: var(--muted); border-color: var(--border); }
+
 /* ── Responsive: phones stack, tables scroll ───────────────── */
 @media (max-width: 720px) {
   .page { padding: 1rem; }
   .page-title { font-size: 24px; }
+  .hero-title { font-size: 24px; }
+  .agenda-time { min-width: 76px; }
   .navbar { padding: 0 1rem; gap: 8px; }
   .nav-links { gap: .9rem; }
   .nav-name { display: none; }

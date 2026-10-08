@@ -1,12 +1,28 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import TimetableGrid from '../components/TimetableGrid';
+import TimetableGrid, { resolveSlotDisplay } from '../components/TimetableGrid';
 import TimetableReview from '../components/TimetableReview';
 import EnableNotifications from '../components/EnableNotifications';
 import SlotForm from '../components/SlotForm';
 
 const API = import.meta.env.VITE_API_URL;
+
+function toMinutes(t) {
+  const m = String(t || '').match(/(\d{1,2}):(\d{2})/);
+  return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : -1;
+}
+
+function formatCountdown(mins) {
+  if (mins < 0) return '';
+  if (mins < 60) return mins <= 1 ? '1 min' : `${mins} min`;
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
+function metaLine(view) {
+  return [view.room, view.faculty].filter(Boolean).join(' · ');
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -16,6 +32,7 @@ export default function Dashboard() {
   const [message, setMessage]     = useState('');
   const [previewData, setPreviewData] = useState(null);
   const [slotModal, setSlotModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', slot }
+  const [view, setView]           = useState('today'); // 'today' agenda | 'week' grid
 
   useEffect(() => {
     fetchSlots();
@@ -40,6 +57,7 @@ export default function Dashboard() {
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
+    e.target.value = '';
     if (!file) return;
     setUploading(true);
     setMessage('');
@@ -83,6 +101,102 @@ export default function Dashboard() {
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const dateLine = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
+  const hasTimetable = slots.length > 0;
+  const todayName = status?.day || now.toLocaleDateString('en-US', { weekday: 'long' });
+  const todaySlots = slots
+    .filter(s => s.day === todayName)
+    .sort((a, b) => String(a.startTime).localeCompare(String(b.startTime)));
+
+  const isCurrent = (s) => {
+    if (!status?.inClass || !status.currentClass) return false;
+    const c = status.currentClass;
+    return (c._id && s._id && String(c._id) === String(s._id)) ||
+      (s.subject === c.subject && s.startTime === c.startTime);
+  };
+
+  const messageIsError = message.includes('failed') || message.includes('discarded');
+
+  const renderHero = () => {
+    if (!status) return null;
+    if (status.inClass && status.currentClass) {
+      const c = status.currentClass;
+      const view = resolveSlotDisplay(c);
+      const left = formatCountdown(toMinutes(c.endTime) - toMinutes(status.currentTime));
+      return (
+        <section className="hero">
+          <div className="hero-kicker">Now</div>
+          <h2 className="hero-title">{view.subject}</h2>
+          <div className="hero-meta">{c.startTime}-{c.endTime}{metaLine(view) ? ` · ${metaLine(view)}` : ''}</div>
+          {left && <div className="hero-sub">Ends in <span className="hero-eta">{left}</span></div>}
+        </section>
+      );
+    }
+    if (status.nextClass) {
+      const n = status.nextClass;
+      const view = resolveSlotDisplay(n);
+      const wait = formatCountdown(toMinutes(n.startTime) - toMinutes(status.currentTime));
+      return (
+        <section className="hero">
+          <div className="hero-kicker">Up next</div>
+          <h2 className="hero-title">{view.subject}</h2>
+          <div className="hero-meta">{n.startTime}-{n.endTime}{metaLine(view) ? ` · ${metaLine(view)}` : ''}</div>
+          <div className="hero-sub">
+            Free right now{wait ? <> · starts in <span className="hero-eta">{wait}</span></> : null}
+          </div>
+        </section>
+      );
+    }
+    return (
+      <section className="hero">
+        <div className="hero-kicker">Today</div>
+        <h2 className="hero-title">No more classes today</h2>
+        <div className="hero-sub">{todaySlots.length} class{todaySlots.length === 1 ? '' : 'es'} on {todayName}</div>
+      </section>
+    );
+  };
+
+  const renderAgenda = () => {
+    if (todaySlots.length === 0) {
+      return (
+        <div className="empty">
+          <p>Nothing scheduled for {todayName}.</p>
+        </div>
+      );
+    }
+    return (
+      <div className="agenda">
+        {todaySlots.map((s) => {
+          const view = resolveSlotDisplay(s);
+          const nowRow = isCurrent(s);
+          const showKind = !['class', 'break'].includes(s.type);
+          return (
+            <div
+              key={s._id || `${s.startTime}-${s.subject}`}
+              className={`agenda-row${nowRow ? ' now' : ''}${s.type === 'break' ? ' is-break' : ''}`}
+              onClick={() => openEdit(s)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') openEdit(s); }}
+              title={`${view.subject}${metaLine(view) ? ` (${metaLine(view)})` : ''}, click to edit`}
+            >
+              <div className="agenda-time">
+                <div>{s.startTime}</div>
+                <div className="agenda-end">{s.endTime}</div>
+              </div>
+              <div className="agenda-main">
+                <div className="agenda-subject">{view.subject}</div>
+                {metaLine(view) && <div className="agenda-meta">{metaLine(view)}</div>}
+              </div>
+              {nowRow
+                ? <span className="agenda-tag">Now</span>
+                : showKind ? <span className="agenda-tag muted">{s.type}</span> : null}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="page">
       <div className="page-header">
@@ -90,42 +204,42 @@ export default function Dashboard() {
           <div className="page-sub">{dateLine}</div>
           <div className="page-title">{greeting}, {user?.displayName}</div>
         </div>
-        <button className="btn accent" onClick={() => setSlotModal({ mode: 'add' })} disabled={!!previewData}>
-          + Add Slot
-        </button>
-      </div>
-
-      <div className="card">
-        <div className="card-row">
-          <div style={{fontSize:12,color:'var(--muted)'}}>
-            GET A NUDGE BEFORE CLASS
-          </div>
-          <EnableNotifications />
-        </div>
-      </div>
-
-      {status && (
-        <div className="stat-strip">
-          <span className={`status-badge ${status.inClass ? 'busy' : 'free'}`}>
-            {status.inClass ? 'In ' + status.currentClass?.subject : 'Free right now'}
-          </span>
-          {status.nextClass && (
-            <span className="stat-note">
-              Next: {status.nextClass.subject} at {status.nextClass.startTime}
-            </span>
+        <div className="header-actions">
+          <button className="btn accent" onClick={() => setSlotModal({ mode: 'add' })} disabled={!!previewData}>
+            + Add Slot
+          </button>
+          {hasTimetable && !previewData && (
+            <label className={`btn${uploading ? ' disabled' : ''}`} htmlFor="tt-upload" style={uploading ? { opacity: .5, pointerEvents: 'none' } : undefined}>
+              {uploading ? 'Reading...' : 'Update timetable'}
+            </label>
           )}
-          <span className="stat-note">{slots.length} slots this week</span>
         </div>
+      </div>
+      <input id="tt-upload" type="file" accept="image/*"
+        style={{ display: 'none' }} onChange={handleUpload} disabled={uploading} />
+
+      <div className="alerts-row">
+        <span className="alerts-label">Class alerts</span>
+        <EnableNotifications />
+      </div>
+
+      {message && (
+        <p className={`flash-note${messageIsError ? ' err' : ''}`}>{message}</p>
       )}
 
-      {/* Review Modal / View */}
-      {previewData ? (
+      {hasTimetable && renderHero()}
+
+      {/* Review flow (unchanged workflow) */}
+      {previewData && (
         <TimetableReview
           previewData={previewData}
           onCancel={() => { setPreviewData(null); setMessage('Extraction discarded.'); }}
           onConfirmSuccess={handleConfirmSuccess}
         />
-      ) : (
+      )}
+
+      {/* First-time onboarding: full upload card only when there is no timetable */}
+      {!hasTimetable && !previewData && (
         <div className="card">
           <div className="card-title">Upload timetable photo</div>
           <label htmlFor="tt-upload">
@@ -136,25 +250,17 @@ export default function Dashboard() {
                 <path d="m7 9 5-5 5 5" />
               </svg>
               <div className="upload-title">
-                {uploading ? 'Reading your timetable with Gemini Vision...' : 'Click to upload your timetable photo'}
+                {uploading ? 'Reading your timetable...' : 'Click to upload your timetable photo'}
               </div>
               <div className="upload-sub">
-                {uploading ? 'Analyzing grid, merged cells, breaks & legend...' : 'Gemini AI will extract your schedule for review'}
+                {uploading ? 'Analyzing grid, merged cells, breaks and legend...' : 'Your schedule will be extracted for review'}
               </div>
             </div>
           </label>
-          <input id="tt-upload" type="file" accept="image/*"
-            style={{display:'none'}} onChange={handleUpload} disabled={uploading} />
-          {message && (
-            <div style={{marginTop:10,fontSize:13,
-              color:(message.includes('failed') || message.includes('discarded')) ? 'var(--text)' : 'var(--accent)'}}>
-              {message}
-            </div>
-          )}
         </div>
       )}
 
-      {/* Manual add / edit form (above the grid so it's never missed) */}
+      {/* Manual add / edit form (above the schedule so it's never missed) */}
       {slotModal && (
         <SlotForm
           mode={slotModal.mode}
@@ -164,23 +270,25 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Weekly Schedule Grid */}
-      {slots.length > 0 ? (
-        <div className="card">
-          <div className="card-title">My weekly schedule</div>
-          <TimetableGrid slots={slots} onSlotClick={openEdit} highlightDay={status?.day} />
-          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>
-            Tip: click a slot to edit or delete it.
-          </div>
-        </div>
-      ) : (
-        !previewData && (
-          <div className="card">
-            <div className="empty">
-              <p>No timetable yet. Upload a photo above to get started!</p>
+      {/* Schedule: today agenda by default, weekly grid on switch */}
+      {hasTimetable && !previewData && (
+        <section>
+          <div className="schedule-head">
+            <h3 className="section-title">{view === 'today' ? `Today, ${todayName}` : 'Weekly schedule'}</h3>
+            <div className="seg" role="tablist" aria-label="Schedule view">
+              <button role="tab" aria-selected={view === 'today'} className={view === 'today' ? 'active' : ''} onClick={() => setView('today')}>Today</button>
+              <button role="tab" aria-selected={view === 'week'} className={view === 'week' ? 'active' : ''} onClick={() => setView('week')}>Week</button>
             </div>
           </div>
-        )
+          {view === 'today' ? renderAgenda() : (
+            <div className="card">
+              <TimetableGrid slots={slots} onSlotClick={openEdit} highlightDay={status?.day} />
+              <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>
+                Tip: click a slot to edit or delete it.
+              </div>
+            </div>
+          )}
+        </section>
       )}
     </div>
   );
