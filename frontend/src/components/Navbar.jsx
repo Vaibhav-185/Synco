@@ -1,8 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const location = useLocation();
   const isActive = path => location.pathname === path ? 'nav-link active' : 'nav-link';
 
@@ -19,6 +21,16 @@ export default function Navbar() {
           {user?.displayName?.slice(0,2).toUpperCase()}
         </div>
         <span className="nav-name">{user?.displayName}</span>
+        <select
+          className="theme-select"
+          value={theme}
+          onChange={e => setTheme(e.target.value)}
+          aria-label="Color theme"
+        >
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
         <button className="btn-signout" onClick={logout}>Sign out</button>
       </div>
     </nav>

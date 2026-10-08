@@ -97,7 +97,7 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
     <div className="card" style={{ border: '2px solid var(--accent)', padding: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 800 }}>Review Extracted Timetable</h2>
+          <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Review Extracted Timetable</h2>
           <p style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>
             Inspect extracted schedule. Select your lab batch or edit any entry before saving.
           </p>
@@ -120,8 +120,8 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
       </div>
 
       {uncertainCount > 0 && (
-        <div className="error-bar" style={{ background: 'rgba(240, 180, 74, 0.15)', borderColor: 'rgba(240, 180, 74, 0.4)', color: '#f0c84a', marginBottom: '1rem' }}>
-          ⚠️ {uncertainCount} slot(s) require review or subject clarification.
+        <div className="warn-bar">
+          {uncertainCount} slot(s) need review before saving.
         </div>
       )}
 
@@ -147,7 +147,7 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
               const hasParallelLabs = slot.parallelLabs && slot.parallelLabs.length > 0;
 
               return (
-                <tr key={idx} style={{ background: isUncertain ? 'rgba(240, 180, 74, 0.1)' : (isBreak ? 'rgba(255,255,255,0.02)' : 'transparent') }}>
+                <tr key={idx} style={{ background: isUncertain ? 'var(--warning-bg)' : 'transparent' }}>
                   <td style={{ textAlign: 'left', minWidth: '100px' }}>
                     <select
                       value={slot.day}
@@ -182,7 +182,7 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
                         width: '100%',
                         background: 'var(--bg3)',
                         color: 'var(--text)',
-                        border: isUncertain ? '1.5px solid #f0c84a' : '1px solid var(--border)',
+                        border: isUncertain ? '1.5px solid var(--warning-border)' : '1px solid var(--border)',
                         borderRadius: '4px',
                         padding: '4px 6px',
                         fontWeight: 600
@@ -191,7 +191,7 @@ export default function TimetableReview({ previewData, onCancel, onConfirmSucces
 
                     {/* Render parallel labs list if multi-batch block */}
                     {hasParallelLabs && (
-                      <div style={{ marginTop: '6px', fontSize: '11px', background: 'rgba(0,0,0,0.3)', padding: '6px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div style={{ marginTop: '6px', fontSize: '11px', background: 'var(--surface-2)', padding: '6px', borderRadius: '6px', border: '1px solid var(--border)' }}>
                         <div style={{ fontSize: '10px', color: 'var(--muted)', fontWeight: 700, marginBottom: '4px' }}>
                           PARALLEL BATCH LABS IN THIS CELL:
                         </div>

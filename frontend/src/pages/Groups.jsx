@@ -72,7 +72,7 @@ export default function Groups() {
         </div>
       </div>
 
-      <div style={{display:'grid',gridTemplateColumns:'280px 1fr',gap:'1rem',alignItems:'start'}}>
+      <div className="groups-layout">
 
         <div>
           <div className="card">

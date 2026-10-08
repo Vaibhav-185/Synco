@@ -20,7 +20,7 @@ function resolveSlotDisplay(slot) {
   return slot;
 }
 
-export default function TimetableGrid({ slots = [], onSlotClick }) {
+export default function TimetableGrid({ slots = [], onSlotClick, highlightDay }) {
   const getSlotsForCell = (day, hourStr) => {
     return slots.filter(s => {
       if (s.day !== day) return false;
@@ -50,7 +50,7 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
         <thead>
           <tr>
             <th>Time</th>
-            {DAYS.map(d => <th key={d}>{d.slice(0, 3)}</th>)}
+            {DAYS.map(d => <th key={d} className={d === highlightDay ? 'today' : ''}>{d.slice(0, 3)}</th>)}
           </tr>
         </thead>
         <tbody>
@@ -59,14 +59,15 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
               <td style={{ fontWeight: 600 }}>{hour}</td>
               {DAYS.map(day => {
                 const cellSlots = getSlotsForCell(day, hour);
+                const todayCls = day === highlightDay ? 'today' : '';
                 if (cellSlots.length === 0) {
-                  return <td key={day}></td>;
+                  return <td key={day} className={todayCls}></td>;
                 }
                 const rawSlot = cellSlots[0];
                 const slot = resolveSlotDisplay(rawSlot);
 
                 return (
-                  <td key={day}>
+                  <td key={day} className={todayCls}>
                     <div
                       className={getSlotClass(slot) + (onSlotClick ? ' tt-slot-clickable' : '')}
                       title={`${slot.subject} ${slot.faculty ? '(' + slot.faculty + ')' : ''} ${slot.note ? '[' + slot.note + ']' : ''}${onSlotClick ? ', click to edit' : ''}`}
@@ -77,9 +78,12 @@ export default function TimetableGrid({ slots = [], onSlotClick }) {
                         ...(onSlotClick ? { cursor: 'pointer' } : {})
                       }}
                     >
-                      <span style={{ fontWeight: 700, fontSize: '10px' }}>
+                      <span style={{ fontWeight: 600, fontSize: '12px' }}>
                         {slot.subject.length > 12 ? slot.subject.slice(0, 11) + '…' : slot.subject}
                       </span>
+                      {!['class', 'break'].includes(slot.type) && (
+                        <span className="slot-kind">{slot.type}</span>
+                      )}
                       {slot.faculty && (
                         <span style={{ fontSize: '9px', opacity: 0.8 }}>{slot.faculty}</span>
                       )}

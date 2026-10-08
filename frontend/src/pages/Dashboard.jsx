@@ -130,6 +130,11 @@ export default function Dashboard() {
           <div className="card-title">Upload timetable photo</div>
           <label htmlFor="tt-upload">
             <div className="upload-zone">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginBottom: 8 }}>
+                <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                <path d="M12 4v12" />
+                <path d="m7 9 5-5 5 5" />
+              </svg>
               <div className="upload-title">
                 {uploading ? 'Reading your timetable with Gemini Vision...' : 'Click to upload your timetable photo'}
               </div>
@@ -163,7 +168,7 @@ export default function Dashboard() {
       {slots.length > 0 ? (
         <div className="card">
           <div className="card-title">My weekly schedule</div>
-          <TimetableGrid slots={slots} onSlotClick={openEdit} />
+          <TimetableGrid slots={slots} onSlotClick={openEdit} highlightDay={status?.day} />
           <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 8 }}>
             Tip: click a slot to edit or delete it.
           </div>
