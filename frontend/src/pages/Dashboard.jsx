@@ -77,12 +77,18 @@ export default function Dashboard() {
 
   const openEdit = (slot) => setSlotModal({ mode: 'edit', slot });
 
+  // Time-aware greeting + real calendar date for the header.
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateLine = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
   return (
     <div className="page">
       <div className="page-header">
         <div>
-          <div className="page-title">Welcome back, {user?.displayName}</div>
-          <div className="page-sub">Your timetable dashboard</div>
+          <div className="page-sub">{dateLine}</div>
+          <div className="page-title">{greeting}, {user?.displayName}</div>
         </div>
         <button className="btn accent" onClick={() => setSlotModal({ mode: 'add' })} disabled={!!previewData}>
           + Add Slot
@@ -99,25 +105,16 @@ export default function Dashboard() {
       </div>
 
       {status && (
-        <div className="card">
-          <div className="card-row">
-            <div>
-              <div style={{fontSize:12,color:'var(--muted)',marginBottom:4}}>
-                Right now: {status.day}, {status.currentTime}
-              </div>
-              <div style={{display:'flex',alignItems:'center',gap:10}}>
-                <span className={`status-badge ${status.inClass ? 'busy' : 'free'}`}>
-                  {status.inClass ? 'In ' + status.currentClass?.subject : 'Free right now'}
-                </span>
-                {status.nextClass && (
-                  <span style={{fontSize:12,color:'var(--muted)'}}>
-                    Next: {status.nextClass.subject} at {status.nextClass.startTime}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div style={{fontSize:12,color:'var(--muted)'}}>{slots.length} slots this week</div>
-          </div>
+        <div className="stat-strip">
+          <span className={`status-badge ${status.inClass ? 'busy' : 'free'}`}>
+            {status.inClass ? 'In ' + status.currentClass?.subject : 'Free right now'}
+          </span>
+          {status.nextClass && (
+            <span className="stat-note">
+              Next: {status.nextClass.subject} at {status.nextClass.startTime}
+            </span>
+          )}
+          <span className="stat-note">{slots.length} slots this week</span>
         </div>
       )}
 
