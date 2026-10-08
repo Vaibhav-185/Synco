@@ -52,6 +52,7 @@ app.use('/api/', apiLimiter);
 
 // Routes
 app.use('/api/auth', authLimiter, require('./routes/auth'));
+app.use('/api/sharing', require('./routes/sharing'));
 app.use('/api/timetable/upload', uploadLimiter);
 app.use('/api/timetable', require('./routes/timetable'));
 app.use('/api/friends',       require('./routes/friends'));

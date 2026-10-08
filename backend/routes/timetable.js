@@ -4,6 +4,10 @@ const path   = require('path');
 const fs     = require('fs');
 const auth   = require('../middleware/auth');
 const Slot   = require('../models/Slot');
+const User   = require('../models/User');
+const Friendship = require('../models/Friendship');
+const TimetableShare = require('../models/TimetableShare');
+const { checkAvailabilityAccess, checkFullAccess } = require('../services/sharingPolicy');
 const { extractRawTimetable } = require('../services/timetableExtractor');
 const { normalizeTimetableData, normalizeTime } = require('../services/timetableNormalizer');
 const { resolveBatchView } = require('../services/batchView');
@@ -194,8 +198,13 @@ router.get('/status', auth, async (req, res) => {
 
 // ── FRIEND'S STATUS ───────────────────────────────────────
 // GET /api/timetable/status/:userId
+// Requires accepted friendship + owner sharing enabled (same gates as
+// /api/friends/status/:friendId) — no polling strangers by ID.
 router.get('/status/:userId', auth, async (req, res) => {
   try {
+    const gate = await checkAvailabilityAccess(req.userId, req.params.userId, { Friendship, User });
+    if (!gate.ok) return res.status(gate.status).json({ message: gate.message });
+
     const { timeStr, dayName } = getCurrentKolkataTime();
 
     const todaySlots  = await Slot.find({ userId: req.params.userId, day: dayName });
@@ -218,6 +227,24 @@ router.get('/status/:userId', auth, async (req, res) => {
       nextClass,
     });
 
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// ── FRIEND'S FULL TIMETABLE (read-only, permission-gated) ──
+// GET /api/timetable/shared/:userId
+// Requires accepted friendship + owner sharing enabled + explicit approved
+// grant. Returns sanitized slots (no userId, __v, or timestamps).
+router.get('/shared/:userId', auth, async (req, res) => {
+  try {
+    const gate = await checkFullAccess(req.userId, req.params.userId, { Friendship, User, TimetableShare });
+    if (!gate.ok) return res.status(gate.status).json({ message: gate.message });
+
+    const slots = await Slot.find({ userId: req.params.userId })
+      .select('-userId -__v -createdAt -updatedAt')
+      .sort({ day: 1, startTime: 1 });
+    res.json(slots);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

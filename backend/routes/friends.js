@@ -3,6 +3,8 @@ const auth       = require('../middleware/auth');
 const User       = require('../models/User');
 const Friendship = require('../models/Friendship');
 const Slot       = require('../models/Slot');
+const TimetableShare = require('../models/TimetableShare');
+const { checkAvailabilityAccess } = require('../services/sharingPolicy');
 const { resolveBatchView } = require('../services/batchView');
 
 // ── SEARCH USER BY USERNAME ───────────────────────────────
@@ -127,6 +129,10 @@ router.get('/status/:friendId', auth, async (req, res) => {
     });
     if (!friendship) return res.status(403).json({ message: 'Not friends' });
 
+    // Private mode hides availability from friends (owner identity from JWT)
+    const gate = await checkAvailabilityAccess(req.userId, req.params.friendId, { Friendship, User });
+    if (!gate.ok) return res.status(gate.status).json({ message: gate.message });
+
     const friend = await User.findById(req.params.friendId).select('-password');
 
     const now     = new Date();
@@ -164,12 +170,23 @@ router.get('/status/:friendId', auth, async (req, res) => {
 
 // ── REMOVE FRIEND ─────────────────────────────────────────
 // DELETE /api/friends/:friendshipId
+// Also invalidates any timetable-sharing grants/requests between the pair,
+// effective immediately on subsequent requests.
 router.delete('/:friendshipId', auth, async (req, res) => {
   try {
-    await Friendship.findOneAndDelete({
+    const gone = await Friendship.findOneAndDelete({
       _id: req.params.friendshipId,
       $or: [{ requester: req.userId }, { addressee: req.userId }]
     });
+    if (gone) {
+      const other = String(gone.requester) === String(req.userId) ? gone.addressee : gone.requester;
+      await TimetableShare.deleteMany({
+        $or: [
+          { owner: req.userId, requester: other },
+          { owner: other, requester: req.userId }
+        ]
+      });
+    }
     res.json({ message: 'Friend removed' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });

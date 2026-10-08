@@ -100,15 +100,28 @@ router.get('/:id/freeslots', auth, async (req, res) => {
     // Get all slots for all members
     const allSlots = await Slot.find({ userId: { $in: group.members } });
 
+    // Private-mode members contribute no schedule data: they are excluded
+    // from busy counts (never inferred free or busy) and reported via
+    // privateCount. Only aggregates ever leave this endpoint.
+    const User = require('../models/User');
+    const privateIds = new Set(
+      (await User.find({ _id: { $in: group.members } }).select('_id shareMode'))
+        .filter(u => u.shareMode === 'private')
+        .map(u => String(u._id))
+    );
+    const visibleMembers = group.members.filter(m => !privateIds.has(String(m)));
+    const visibleSlots = allSlots.filter(s => !privateIds.has(String(s.userId)));
+
     const totalMembers = group.members.length;
+    const privateCount = privateIds.size;
     const result = {};
 
     // For each day and each hour, check how many members are free
     for (const day of DAYS) {
       result[day] = [];
       for (const hour of HOURS) {
-        const busyCount = group.members.filter(memberId => {
-          return allSlots.some(slot =>
+        const busyCount = visibleMembers.filter(memberId => {
+          return visibleSlots.some(slot =>
             slot.userId.toString() === memberId.toString() &&
             slot.day === day &&
             slot.startTime <= hour &&
@@ -116,8 +129,8 @@ router.get('/:id/freeslots', auth, async (req, res) => {
           );
         }).length;
 
-        const freeCount = totalMembers - busyCount;
-        const allFree   = busyCount === 0;
+        const freeCount = visibleMembers.length - busyCount;
+        const allFree   = busyCount === 0 && privateCount === 0;
         const majority  = freeCount >= Math.ceil(totalMembers / 2);
 
         result[day].push({
@@ -125,6 +138,7 @@ router.get('/:id/freeslots', auth, async (req, res) => {
           freeCount,
           busyCount,
           totalMembers,
+          privateCount,
           allFree,
           majority,
         });
@@ -134,6 +148,7 @@ router.get('/:id/freeslots', auth, async (req, res) => {
     res.json({
       groupName:    group.name,
       totalMembers,
+      privateCount,
       freeSlots:    result,
     });
 

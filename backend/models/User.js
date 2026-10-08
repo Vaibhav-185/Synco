@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
   password:         { type: String, required: true }, // bcrypt hashed, never plain text
   avatarColor:      { type: String, default: '#c8f04a' },
   pushSubscription: { type: Object, default: null },  // for push notifications
+  // Timetable sharing preference. 'open' (default) = accepted friends see
+  // availability; 'private' hides availability AND suppresses full-timetable
+  // grants until re-enabled. Missing on old docs => treated as 'open'.
+  shareMode:        { type: String, enum: ['open', 'private'], default: 'open' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
