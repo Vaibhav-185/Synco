@@ -41,12 +41,18 @@ async function runNotificationTick({ windowMinutes = 10, now = new Date(), send 
   const nowMin = toMinutes(timeStr);
 
   // Candidates: slots today that start within the window (and are not breaks).
-  // Only users with a live subscription join the candidates — no .populate
-  // needed since pushSubscription is embedded (not a ref).
+  // pushSubscription lives on User (Slot.userId is an ObjectId ref, not an
+  // embedded subdoc), so resolve subscribed users first, then their slots.
+  const subscribedIds = await User.distinct('_id', {
+    'pushSubscription.endpoint': { $exists: true, $ne: null }
+  });
+  if (!subscribedIds.length) {
+    return { dateKey, dayName, timeStr, checked: 0, notified: 0 };
+  }
   const todaySlots = await Slot.find({
     day: dayName,
     type: { $ne: 'break' },
-    'userId.pushSubscription.endpoint': { $exists: true, $ne: null }
+    userId: { $in: subscribedIds }
   });
   const candidates = todaySlots.filter(s => {
     const start = toMinutes(s.startTime);
@@ -57,8 +63,8 @@ async function runNotificationTick({ windowMinutes = 10, now = new Date(), send 
 
   let notified = 0;
   for (const slot of candidates) {
-    const user = slot.userId;
-    if (!user || !user._id) continue;
+    const userId = slot.userId;
+    if (!userId) continue;
 
     // ── PERSISTENT DEDUPE ──
     // userId + slotId + dateKey + scheduledStart is unique-indexed, so a
@@ -66,7 +72,7 @@ async function runNotificationTick({ windowMinutes = 10, now = new Date(), send 
     // throws E11000 and we simply skip. No in-memory state involved.
     try {
       await NotificationLog.create({
-        userId: user._id,
+        userId,
         slotId: slot._id,
         dateKey,
         scheduledStart: slot.startTime,
@@ -87,7 +93,7 @@ async function runNotificationTick({ windowMinutes = 10, now = new Date(), send 
     const body =
       view.subject + ' starts at ' + slot.startTime + (bits.length ? ' ' + bits.join(' ') : '');
 
-    const result = await send(user._id, {
+    const result = await send(userId, {
       title: '⏰ Class starting soon',
       body,
       url: '/',
@@ -100,7 +106,7 @@ async function runNotificationTick({ windowMinutes = 10, now = new Date(), send 
       // keep the row — better to miss one than spam.
       if (result.permanent) {
         await NotificationLog.deleteOne({
-          userId: user._id, slotId: slot._id, dateKey, scheduledStart: slot.startTime
+          userId, slotId: slot._id, dateKey, scheduledStart: slot.startTime
         }).catch(() => {});
       }
       continue;
