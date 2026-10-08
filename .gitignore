@@ -1,0 +1,34 @@
+# ── Synco root gitignore: never commit secrets, builds, or local files ──
+# Env files (any level). Templates (*.example) ARE committed.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies / builds
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+backend/uploads/*
+!backend/uploads/.gitkeep
+dist/
+build/
+
+# Logs / local debug
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+/tmp/synco-*.log
+
+# OS / editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.sw?
+
+# Local tooling
+.freebuff/

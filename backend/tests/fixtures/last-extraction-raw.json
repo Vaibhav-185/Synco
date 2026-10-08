@@ -1,0 +1,352 @@
+{
+  "gridEntries": [
+    {
+      "day": "Monday",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "rawText": "Remedial class"
+    },
+    {
+      "day": "Monday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "rawText": "AIML\nVG"
+    },
+    {
+      "day": "Monday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Monday",
+      "startTime": "11:15",
+      "endTime": "12:15",
+      "rawText": "CN\nCBM"
+    },
+    {
+      "day": "Monday",
+      "startTime": "12:15",
+      "endTime": "13:15",
+      "rawText": "RMIPR\nSKM"
+    },
+    {
+      "day": "Monday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Monday",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "rawText": "EVS\nMM"
+    },
+    {
+      "day": "Monday",
+      "startTime": "15:00",
+      "endTime": "17:00",
+      "rawText": "AIML Lab C1, VG+SP ISE403\nCN lab C2, CBM+PL ISE\nMAD Lab C3, SMB+MS ISE206"
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "rawText": "CN\nCBM"
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "rawText": "AIML\nVG"
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "11:15",
+      "endTime": "12:15",
+      "rawText": "ACD\nSMB"
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "12:15",
+      "endTime": "13:15",
+      "rawText": "Adv Algorithms/UIUX\nSKR/MS AV"
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Tuesday",
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "rawText": "AICTE Points"
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "rawText": "Adv Algorithms/UIUX\nSKB/MS AV"
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "rawText": "RMIPR\nSKM"
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "11:15",
+      "endTime": "13:15",
+      "rawText": "AIML Lab C3, VG+SAI ISE403\nCN lab C1, CBM+RJ ISE 202\nMAD Lab C2, SMB+MS ISE206"
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "rawText": "ACD\nSMB"
+    },
+    {
+      "day": "Wednesday",
+      "startTime": "15:00",
+      "endTime": "17:00",
+      "rawText": "MINI PROJECT"
+    },
+    {
+      "day": "Thursday",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "rawText": "ACD\nSMB"
+    },
+    {
+      "day": "Thursday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "rawText": "CN\nCBM"
+    },
+    {
+      "day": "Thursday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Thursday",
+      "startTime": "11:15",
+      "endTime": "12:15",
+      "rawText": "Adv Algorithms/UIUX\nSKB/MS, AY"
+    },
+    {
+      "day": "Thursday",
+      "startTime": "12:15",
+      "endTime": "13:15",
+      "rawText": "AIML\nVG"
+    },
+    {
+      "day": "Thursday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Thursday",
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "rawText": "Student proctoring"
+    },
+    {
+      "day": "Friday",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "rawText": "AIML Lab C2, VG+MJISE403\nCN lab C3, PL+RJ ISE 202\nMAD Lab C1, YBS+MS ISE206"
+    },
+    {
+      "day": "Friday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Friday",
+      "startTime": "11:15",
+      "endTime": "12:15",
+      "rawText": "EVS\nMM"
+    },
+    {
+      "day": "Friday",
+      "startTime": "12:15",
+      "endTime": "13:15",
+      "rawText": "Tutorial Class"
+    },
+    {
+      "day": "Friday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Friday",
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "rawText": "RMIPR(TT)\nSKM"
+    },
+    {
+      "day": "Saturday",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "rawText": "CN\nCBM"
+    },
+    {
+      "day": "Saturday",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "rawText": "AIML\nVG"
+    },
+    {
+      "day": "Saturday",
+      "startTime": "11:00",
+      "endTime": "11:15",
+      "rawText": "TEA BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Saturday",
+      "startTime": "11:15",
+      "endTime": "13:15",
+      "rawText": "GENESIS STUDENT ACTIVITY/GUEST TALKS/LECTURES/HANDS ON FOR"
+    },
+    {
+      "day": "Saturday",
+      "startTime": "13:15",
+      "endTime": "14:00",
+      "rawText": "LUNCH BREAK",
+      "isBreak": true
+    },
+    {
+      "day": "Saturday",
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "rawText": "NSS/YOGA/PE/CULTURAL"
+    }
+  ],
+  "referenceTable": [
+    {
+      "code": "PCC22IS51",
+      "subject": "Automata & Compiler Design",
+      "initials": "SMB",
+      "faculty": "Dr. Bindu Bhargavi S.M"
+    },
+    {
+      "code": "IPCC22IS52",
+      "subject": "Artificial Intelligence & Machine Learning",
+      "initials": "VG",
+      "faculty": "Mrs. Vidya G Byakod"
+    },
+    {
+      "code": "IPCC22IS53",
+      "subject": "Computer Networks",
+      "initials": "CBM",
+      "faculty": "Dr. Chandrakala B.M."
+    },
+    {
+      "code": "PCCL22ISL54",
+      "subject": "Mobile Application Development lab",
+      "initials": "SMB+SAI",
+      "faculty": "Dr. Bindu Bhargavi S.M, Ms. Sai S Joshi,Mr. Yogesh B S"
+    },
+    {
+      "code": "PEC 22IS553",
+      "subject": "Advanced Algorithms",
+      "initials": "SKB",
+      "faculty": "Mrs. Shalini K B"
+    },
+    {
+      "code": "PEC 22IS554",
+      "subject": "UIUX Design",
+      "initials": "MS, AY",
+      "faculty": "Mrs. Madhavaram Swapna, Mr. Ayush Mishra"
+    },
+    {
+      "code": "AEC22RM56",
+      "subject": "Research Methodology and IPR",
+      "initials": "SKM",
+      "faculty": "Dr. Suresh Kumar"
+    },
+    {
+      "code": "HSMS22ES57",
+      "subject": "Environmental Studies",
+      "initials": "MM",
+      "faculty": "Ms. Monicashree M"
+    },
+    {
+      "code": "IPCC22IS52",
+      "subject": "Artificial Intelligence & Machine Learning Lab",
+      "initials": "VG, SP, SAI, JRS",
+      "faculty": "Dr. Rajeshwari. J Ms. Spoorthi .M, Mrs. Vidya G Byakod, Ms. Sai S Joshi"
+    },
+    {
+      "code": "IPCC22IS53",
+      "subject": "Computer Networks Lab",
+      "initials": "CBM, RJ, PL",
+      "faculty": "Dr. Chandrakala B.M, Mrs. Rekha Jayaram, Ms. Preethi Lokesh"
+    },
+    {
+      "code": "22IS66",
+      "subject": "Mini project II",
+      "initials": "VJ, RJ",
+      "faculty": "Mrs. Vijetha,Mrs. Rekha Jayaram"
+    }
+  ],
+  "days": [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "notes": [
+    "NOTE: Classes scheduled on Tuesday between 9:00-11:00 will be conducted only in the 1st and 3rd week of the month"
+  ],
+  "timeSlots": [
+    "09:00-10:00",
+    "10:00-11:00",
+    "11:00-11:15",
+    "11:15-12:15",
+    "12:15-01:15",
+    "01:15-02:00",
+    "02:00-03:00",
+    "03:00-04:00",
+    "04:00-05:00"
+  ]
+}
