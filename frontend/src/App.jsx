@@ -6,6 +6,7 @@ import Signup    from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Friends   from './pages/Friends';
 import Groups    from './pages/Groups';
+import Profile   from './pages/Profile';
 import Privacy   from './pages/Privacy';
 import Terms     from './pages/Terms';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -32,6 +33,9 @@ function App() {
           }/>
           <Route path="/friends" element={
             <PrivateRoute><Navbar /><ErrorBoundary><Friends /></ErrorBoundary></PrivateRoute>
+          }/>
+          <Route path="/profile" element={
+            <PrivateRoute><Navbar /><ErrorBoundary><Profile /></ErrorBoundary></PrivateRoute>
           }/>
           <Route path="/groups" element={
             <PrivateRoute><Navbar /><Groups /></PrivateRoute>

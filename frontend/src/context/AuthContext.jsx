@@ -12,8 +12,13 @@ export function AuthProvider({ children }) {
     const savedToken = localStorage.getItem('synco_token');
     const savedUser  = localStorage.getItem('synco_user');
     if (savedToken && savedUser) {
-      setUser(JSON.parse(savedUser));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+      try {
+        setUser(JSON.parse(savedUser));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+      } catch {
+        localStorage.removeItem('synco_token');
+        localStorage.removeItem('synco_user');
+      }
     }
     setLoading(false);
   }, []);
@@ -44,8 +49,28 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Re-fetch the profile (after edits) and keep stored session in sync.
+  const refreshMe = async () => {
+    try {
+      const res = await axios.get(`${API}/auth/me`);
+      const token = localStorage.getItem('synco_token');
+      if (token && res.data) {
+        const sessionUser = {
+          id: res.data._id, displayName: res.data.displayName,
+          username: res.data.username, email: res.data.email,
+          avatarColor: res.data.avatarColor
+        };
+        localStorage.setItem('synco_user', JSON.stringify(sessionUser));
+        setUser(sessionUser);
+      }
+      return res.data;
+    } catch {
+      return null;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, logout, refreshMe }}>
       {children}
     </AuthContext.Provider>
   );

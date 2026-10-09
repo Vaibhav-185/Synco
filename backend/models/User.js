@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   // availability; 'private' hides availability AND suppresses full-timetable
   // grants until re-enabled. Missing on old docs => treated as 'open'.
   shareMode:        { type: String, enum: ['open', 'private'], default: 'open' },
+  emailVerified:   { type: Boolean, default: false }, // no verification flow yet; shown honestly in profile
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

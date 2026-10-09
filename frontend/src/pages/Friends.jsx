@@ -17,6 +17,7 @@ export default function Friends() {
   const [outgoing, setOutgoing]         = useState([]);
   const [grants, setGrants]             = useState([]);
   const [shareMsg, setShareMsg]         = useState('');
+  const [sentRequests, setSentRequests]   = useState([]);
   const [viewingId, setViewingId]       = useState(null);
   const [sharedSlots, setSharedSlots]   = useState({});
   const [sharedErr, setSharedErr]       = useState({});
@@ -25,6 +26,7 @@ export default function Friends() {
     fetchFriends();
     fetchPending();
     fetchSharing();
+    fetchSent();
   }, []);
 
   const fetchSharing = async () => {
@@ -161,9 +163,17 @@ export default function Friends() {
       setSearchResult(null);
       setSearchQ('');
       setSearchMsg('Friend request sent.');
+      fetchSent();
     } catch (err) {
       setSearchMsg(err.response?.data?.message || 'Error sending request');
     }
+  };
+
+  const fetchSent = async () => {
+    try {
+      const res = await axios.get(`${API}/friends/requests/sent`);
+      setSentRequests(res.data || []);
+    } catch (err) { console.error(err); }
   };
 
   const respondToRequest = async (id, action) => {
@@ -201,6 +211,10 @@ export default function Friends() {
         {shareMsg && <div style={{ fontSize: 12, color: 'var(--muted)' }}>{shareMsg}</div>}
       </div>
 
+      {(incoming.length > 0 || pending.length > 0 || sentRequests.length > 0) && (
+        <h3 className="section-title" style={{ margin: '0 0 .5rem' }}>Requests</h3>
+      )}
+
       {incoming.length > 0 && (
         <div className="card">
           <div className="card-title">Timetable requests ({incoming.length})</div>
@@ -208,8 +222,8 @@ export default function Friends() {
             <div key={req._id} className="friend-row">
               <div className="friend-av">{(req.requester?.displayName || '?').slice(0, 2).toUpperCase()}</div>
               <div className="friend-info">
-                <div className="friend-name">{req.requester?.displayName}</div>
-                <div className="friend-un">@{req.requester?.username} wants to view your timetable</div>
+                <div className="friend-name">{req.requester?.displayName || 'Unknown user'}</div>
+                <div className="friend-un">@{req.requester?.username || 'unknown'} <span className="pill gray">Timetable access</span></div>
               </div>
               <div className="friend-actions">
                 <button className="btn accent sm" onClick={() => respondShare(req._id, 'approved')}>Allow</button>
@@ -262,12 +276,28 @@ export default function Friends() {
               <div className="friend-av">{(req.requester?.displayName || '?').slice(0,2).toUpperCase()}</div>
               <div className="friend-info">
                 <div className="friend-name">{req.requester?.displayName || 'Unknown user'}</div>
-                <div className="friend-un">@{req.requester?.username || 'unknown'}</div>
+                <div className="friend-un">@{req.requester?.username || 'unknown'} <span className="pill gray">Friend request</span></div>
               </div>
               <div className="friend-actions">
                 <button className="btn accent" onClick={() => respondToRequest(req._id, 'accepted')}>Accept</button>
                 <button className="btn danger sm" onClick={() => respondToRequest(req._id, 'declined')}>Decline</button>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {sentRequests.length > 0 && (
+        <div className="card">
+          <div className="card-title">Sent friend requests ({sentRequests.length})</div>
+          {sentRequests.map(req => (
+            <div key={req._id} className="friend-row">
+              <div className="friend-av">{(req.addressee?.displayName || '?').slice(0,2).toUpperCase()}</div>
+              <div className="friend-info">
+                <div className="friend-name">{req.addressee?.displayName || 'Unknown user'}</div>
+                <div className="friend-un">@{req.addressee?.username || 'unknown'}</div>
+              </div>
+              <span className="pill gray">Pending</span>
             </div>
           ))}
         </div>

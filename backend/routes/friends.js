@@ -119,6 +119,21 @@ router.get('/requests/pending', auth, async (req, res) => {
   }
 });
 
+// ── GET SENT FRIEND REQUESTS ──────────────────────────────
+// GET /api/friends/requests/sent — requests I sent that are still pending
+router.get('/requests/sent', auth, async (req, res) => {
+  try {
+    const requests = await Friendship.find({
+      requester: req.userId,
+      status: 'pending'
+    }).populate('addressee', 'displayName username');
+
+    res.json(requests.filter(r => r.addressee));
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // ── GET FRIEND'S LIVE STATUS ──────────────────────────────
 // GET /api/friends/status/:friendId
 // Is this friend in class right now or free?
