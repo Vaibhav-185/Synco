@@ -309,7 +309,7 @@ export default function Friends() {
           <div className="field">
             <label>Username</label>
             <input
-              type="text" placeholder="vaibhav_cs"
+              type="text" placeholder="alex_123"
               value={searchQ}
               onChange={e => setSearchQ(e.target.value.replace(/[^a-z0-9_]/g,'').toLowerCase())}
               onKeyDown={e => e.key === 'Enter' && searchUser()}

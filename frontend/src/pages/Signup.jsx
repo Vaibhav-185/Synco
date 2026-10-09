@@ -37,11 +37,11 @@ export default function Signup() {
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label>Display name</label>
-            <input type="text" name="displayName" value={form.displayName} onChange={handleChange} placeholder="Vaibhav Sharma" required />
+            <input type="text" name="displayName" value={form.displayName} onChange={handleChange} placeholder="Alex Morgan" required />
           </div>
           <div className="field">
             <label>Username</label>
-            <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="vaibhav_cs" required />
+            <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="alex_123" required />
             <span className="hint">Lowercase, numbers, underscores only.</span>
           </div>
           <div className="field">
