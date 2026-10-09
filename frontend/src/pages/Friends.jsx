@@ -360,11 +360,16 @@ export default function Friends() {
                       <span className="pill gray">{s.denied}</span>
                     ) : (
                       <span className={`status-badge ${s.inClass ? 'busy' : 'free'}`}>
-                        {s.inClass ? 'In ' + s.currentClass?.subject : 'Free'}
+                        {s.inClass ? 'In class' : 'Free'}
                       </span>
                     )
                   ) : (
                     <span className="pill gray">Loading...</span>
+                  )}
+                  {s?.inClass && s.currentClass && (
+                    <div style={{fontSize:11,color:'var(--muted)',marginTop:3}}>
+                      {s.currentClass.subject} until {s.currentClass.endTime}
+                    </div>
                   )}
                   {s?.nextClass && !s.inClass && (
                     <div style={{fontSize:11,color:'var(--muted)',marginTop:3}}>
