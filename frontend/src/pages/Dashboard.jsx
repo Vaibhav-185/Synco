@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import TimetableGrid, { resolveSlotDisplay } from '../components/TimetableGrid';
@@ -7,6 +7,7 @@ import EnableNotifications from '../components/EnableNotifications';
 import SlotForm from '../components/SlotForm';
 
 const API = import.meta.env.VITE_API_URL;
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // mirrors backend multer limit
 
 function toMinutes(t) {
   const m = String(t || '').match(/(\d{1,2}):(\d{2})/);
@@ -33,12 +34,18 @@ export default function Dashboard() {
   const [previewData, setPreviewData] = useState(null);
   const [slotModal, setSlotModal] = useState(null); // null | { mode: 'add' } | { mode: 'edit', slot }
   const [view, setView]           = useState('today'); // 'today' agenda | 'week' grid
+  const uploadAbort = useRef(null); // aborts the in-flight upload, if any
 
   useEffect(() => {
     fetchSlots();
     fetchStatus();
     const interval = setInterval(fetchStatus, 60000);
-    return () => clearInterval(interval);
+    // Abandon any in-flight upload on unmount so its late settlement
+    // cannot flip state on an unmounted component.
+    return () => {
+      clearInterval(interval);
+      if (uploadAbort.current) uploadAbort.current.abort();
+    };
   }, []);
 
   const fetchSlots = async () => {
@@ -55,10 +62,28 @@ export default function Dashboard() {
     } catch (err) { console.error(err); }
   };
 
+  const cancelUpload = () => {
+    if (uploadAbort.current) uploadAbort.current.abort();
+  };
+
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     e.target.value = '';
     if (!file) return;
+    // Client-side validation mirrors the backend (image/*, 10 MB): instant
+    // feedback instead of a wasted slow upload.
+    if (!String(file.type || '').startsWith('image/')) {
+      setMessage('Upload failed: that file is not an image. Choose a JPEG, PNG, or WebP photo.');
+      return;
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMessage('Upload failed: image is larger than 10 MB. Retake or compress the photo.');
+      return;
+    }
+    // Abort any previous in-flight upload before starting a new one.
+    if (uploadAbort.current) uploadAbort.current.abort();
+    const controller = new AbortController();
+    uploadAbort.current = controller;
     setUploading(true);
     setMessage('');
     setPreviewData(null);
@@ -66,16 +91,23 @@ export default function Dashboard() {
       const formData = new FormData();
       formData.append('timetable', file);
       const res = await axios.post(`${API}/timetable/upload`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        signal: controller.signal
       });
       if (res.data.preview) {
         setPreviewData(res.data);
         setMessage('Review the extracted timetable below, then confirm to save.');
       }
     } catch (err) {
-      setMessage('Upload failed: ' + (err.response?.data?.message || err.message));
+      if (err && (err.code === 'ERR_CANCELED' || err.name === 'CanceledError')) {
+        setMessage('Upload cancelled. Your current timetable is unchanged.');
+      } else {
+        setMessage('Upload failed: ' + (err.response?.data?.message || err.message));
+      }
+    } finally {
+      if (uploadAbort.current === controller) uploadAbort.current = null;
+      setUploading(false);
     }
-    setUploading(false);
   };
 
   const handleConfirmSuccess = (savedSlots) => {
@@ -213,6 +245,9 @@ export default function Dashboard() {
               {uploading ? 'Reading...' : 'Update timetable'}
             </label>
           )}
+          {uploading && (
+            <button className="btn sm" onClick={cancelUpload}>Cancel</button>
+          )}
         </div>
       </div>
       <input id="tt-upload" type="file" accept="image/*"
@@ -257,6 +292,9 @@ export default function Dashboard() {
               </div>
             </div>
           </label>
+          {uploading && (
+            <button className="btn sm" style={{ marginTop: 10 }} onClick={cancelUpload}>Cancel upload</button>
+          )}
         </div>
       )}
 
