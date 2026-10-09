@@ -354,7 +354,7 @@ export default function Friends() {
                   <div className="friend-name">{friend.displayName || 'Unknown user'}</div>
                   <div className="friend-un">@{friend.username || 'unknown'}</div>
                 </div>
-                <div>
+                <div className="friend-status">
                   {s ? (
                     s.denied ? (
                       <span className="pill gray">{s.denied}</span>

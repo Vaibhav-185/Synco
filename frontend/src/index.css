@@ -194,12 +194,18 @@ button, input, select { font-family: inherit; }
   .page-title { font-size: 24px; }
   .hero-title { font-size: 24px; }
   .agenda-time { min-width: 76px; }
-  .navbar { padding: 0 1rem; gap: 8px; }
-  .nav-links { gap: .9rem; }
-  .nav-name { display: none; }
+  .navbar { flex-wrap: wrap; height: auto; min-height: 54px; padding: .55rem 1rem; row-gap: .5rem; }
+  .nav-user { margin-left: auto; gap: 8px; }
+  .nav-links { order: 3; flex-basis: 100%; gap: 1.25rem; overflow-x: auto; padding-bottom: 2px; }
   .card { padding: 1rem; }
   .groups-layout { grid-template-columns: 1fr; }
-  .stat-strip { gap: .5rem 0; }
-  .stat-strip > * { padding: 0 .9rem; }
-  .stat-strip > *:first-child { padding-left: 0; }
+  .friend-row { flex-wrap: wrap; }
+  .friend-status { flex-basis: 100%; margin-top: 2px; }
+  .friend-status .status-badge { max-width: 100%; }
+  .friend-name { overflow-wrap: anywhere; }
+  .friend-actions { margin-left: auto; }
+}
+@media (max-width: 420px) {
+  .nav-name { display: none; }
+  .theme-select { max-width: 86px; }
 }
