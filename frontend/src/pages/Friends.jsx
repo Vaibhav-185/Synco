@@ -259,10 +259,10 @@ export default function Friends() {
           <div className="card-title">Friend requests ({pending.length})</div>
           {pending.map(req => (
             <div key={req._id} className="friend-row">
-              <div className="friend-av">{req.requester.displayName.slice(0,2).toUpperCase()}</div>
+              <div className="friend-av">{(req.requester?.displayName || '?').slice(0,2).toUpperCase()}</div>
               <div className="friend-info">
-                <div className="friend-name">{req.requester.displayName}</div>
-                <div className="friend-un">@{req.requester.username}</div>
+                <div className="friend-name">{req.requester?.displayName || 'Unknown user'}</div>
+                <div className="friend-un">@{req.requester?.username || 'unknown'}</div>
               </div>
               <div className="friend-actions">
                 <button className="btn accent" onClick={() => respondToRequest(req._id, 'accepted')}>Accept</button>
@@ -295,9 +295,9 @@ export default function Friends() {
         )}
         {searchResult && (
           <div className="friend-row" style={{marginTop:10}}>
-            <div className="friend-av">{searchResult.displayName.slice(0,2).toUpperCase()}</div>
+            <div className="friend-av">{(searchResult.displayName || '?').slice(0,2).toUpperCase()}</div>
             <div className="friend-info">
-              <div className="friend-name">{searchResult.displayName}</div>
+              <div className="friend-name">{searchResult.displayName || 'Unknown user'}</div>
               <div className="friend-un">@{searchResult.username}</div>
             </div>
             <button className="btn accent" onClick={() => sendRequest(searchResult._id)}>+ Add Friend</button>
