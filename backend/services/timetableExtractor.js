@@ -14,11 +14,15 @@ const fs = require('fs');
  *   with exponential backoff + ±25% jitter (~4s after attempt 1, ~8s after attempt 2).
  * - 429 (per-model quota) does NOT retry the same model: it advances to the next
  *   model in the chain, whose quota is independent.
- * - 400 (bad image), 401/403 (key/access), timeouts (504) and unexpected errors
- *   fail fast — never retried, never advanced (they are request/key-level, not
+ * - 400 (bad image), 401/403 (key/access) and unexpected errors fail fast —
+ *   never retried, never advanced (they are request/key-level, not
  *   model-capacity problems).
- * - Each HTTP attempt is bounded by a 60s timeout (enforced by the SDK via httpOptions.timeout).
- * - Worst case: 3 models × 3 attempts = 9 requests, spread across 3 separate daily quotas.
+ * - HTTP 200 with missing/empty/non-JSON text or an empty grid is a
+ *   model-level miss: it advances to the next model (same as a timeout),
+ *   because killing the whole upload over one pool's empty body stranded
+ *   the remaining chain. Only the last model throws UnparseableModelResponse.
+ * - Each HTTP attempt is bounded by a 90s timeout (enforced by the SDK via httpOptions.timeout).
+ * - Worst case: 5 models × 3 attempts = 15 requests, spread across 5 separate daily quotas.
  *
  * Errors thrown to callers are always user-friendly. The underlying provider
  * status is preserved on `err.underlying` (safe fields only) for server-side
@@ -173,6 +177,51 @@ function leanImageForGemini(imagePath) {
   })();
 }
 
+/**
+ * Pulls usable text out of a generateContent response, tolerating the real
+ * shapes the SDK returns. `response.text` is a getter that yields `undefined`
+ * when the response has no candidates, empty parts, or no string text parts
+ * (overloaded pools and safety blocks both produce HTTP 200 with unusable
+ * bodies). Falls back to walking candidates[0].content.parts manually.
+ * Returns '' when nothing usable exists — never throws.
+ */
+function extractTextFromResponse(response) {
+  try {
+    const direct = response && response.text;
+    if (typeof direct === 'string' && direct.trim()) return direct;
+    const parts = response && response.candidates && response.candidates[0] &&
+      response.candidates[0].content && response.candidates[0].content.parts;
+    if (!Array.isArray(parts)) return '';
+    let out = '';
+    for (const p of parts) {
+      if (p && typeof p.text === 'string' && !(typeof p.thought === 'boolean' && p.thought)) out += p.text;
+    }
+    return out;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * An HTTP-200 response with missing, empty, or non-JSON text is a
+ * model-level miss, NOT a fatal error: the model served an unusable body
+ * (seen live: fallback pool returning 200 with no text parts). Callers
+ * advance to the next chain model instead of aborting the whole upload.
+ * Returns { ok:true, data } or { ok:false }.
+ */
+function parseTimetableText(text) {
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return { ok: false };
+  }
+  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.gridEntries) || parsed.gridEntries.length === 0) {
+    return { ok: false };
+  }
+  return { ok: true, data: parsed };
+}
+
 async function extractRawTimetable(imagePath) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey.includes('your_') || apiKey === 'YOUR_GEMINI_API_KEY') {
@@ -297,6 +346,7 @@ Instructions:
   };
 
   let lastError = null;
+  let sawEmptyOutput = false; // chain served only unusable 200 bodies, no exceptions
   for (let modelIndex = 0; modelIndex < MODEL_CHAIN.length; modelIndex++) {
     const model = MODEL_CHAIN[modelIndex];
     const isLastModel = modelIndex === MODEL_CHAIN.length - 1;
@@ -317,10 +367,18 @@ Instructions:
           config: requestConfig,
         });
 
-        let parsed;
-        try {
-          parsed = JSON.parse(response.text);
-        } catch (parseErr) {
+        const text = extractTextFromResponse(response);
+        const parsed = parseTimetableText(text);
+        if (!parsed.ok) {
+          // Model-level miss: HTTP 200 with missing/empty/non-JSON text or an
+          // empty grid (seen live on an overloaded fallback pool). Advance to
+          // the next model — do NOT throw a classified error here, or the
+          // rethrow guard below would abort the remaining chain.
+          sawEmptyOutput = true;
+          if (!isLastModel) {
+            console.log(`⚠️ ${model} returned no usable timetable output. Trying next model in chain...`);
+            break;
+          }
           throw makeExtractionError(
             'The timetable extraction returned an unreadable response. Please try again.',
             502,
@@ -328,7 +386,7 @@ Instructions:
           );
         }
         console.log(`✅ Timetable extracted via ${model}${modelIndex > 0 ? ` (fallback ${modelIndex})` : ''}`);
-        return parsed;
+        return parsed.data;
       } catch (err) {
         // Errors we created ourselves (already classified) must not be re-retried or re-wrapped.
         if (err && err.httpStatus && err.underlying) throw err;
@@ -373,7 +431,8 @@ Instructions:
           // ONE diagnostic line (name + message head; provider payloads occasionally
           // bury the real cause in err.message).
           console.log(`   ↳ diagnostic: ${err.name || 'Error'}: ${String(err.message || '').slice(0, 160)}`);
-          await sleepWithJitter(attempt);
+          // SYNCO_NO_BACKOFF=1 skips sleeping (offline test suites only).
+          if (!process.env.SYNCO_NO_BACKOFF) await sleepWithJitter(attempt);
           continue;
         }
         if (!isLastModel) {
@@ -384,6 +443,13 @@ Instructions:
     }
   }
 
+  if (sawEmptyOutput && !lastError) {
+    throw makeExtractionError(
+      'The timetable extraction returned an unreadable response. Please try again.',
+      502,
+      { name: 'UnparseableModelResponse' }
+    );
+  }
   throw classifyExtractionError(lastError || new Error('Unknown extraction failure'));
 }
 
