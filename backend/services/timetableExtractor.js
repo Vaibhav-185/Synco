@@ -358,8 +358,12 @@ Instructions:
         }
 
         // Non-retryable (400 bad image, 401/403 key issues, unexpected) — fail
-        // fast; these are request/key-level, not model-capacity.
+        // fast; these are request/key-level, not model-capacity. Log the
+        // provider's own reason (status + message head; never contains the
+        // API key) so Render logs show WHY instead of only a bare 400.
         if (!isRetryableError(err)) {
+          console.log(`⚠️ ${model} rejected the request (status=${err.status || 'unknown'}). Failing fast.`);
+          console.log(`   ↳ provider: ${err.name || 'Error'}: ${String(err.message || '').slice(0, 300)}`);
           throw classifyExtractionError(err);
         }
 
