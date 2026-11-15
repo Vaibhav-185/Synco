@@ -5,7 +5,12 @@ import { AuthProvider } from '../context/AuthContext';
 import Dashboard from './Dashboard';
 
 vi.mock('axios', () => ({
-  default: { get: vi.fn(), post: vi.fn(), defaults: { headers: { common: {} } } }
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+    defaults: { headers: { common: {} } },
+    interceptors: { response: { use: vi.fn() }, request: { use: vi.fn() } },
+  },
 }));
 
 const SLOT = { _id: 's1', day: 'Monday', startTime: '09:00', endTime: '10:00', subject: 'DC', type: 'class' };

@@ -4,6 +4,24 @@ import axios from 'axios';
 const AuthContext = createContext();
 const API = import.meta.env.VITE_API_URL;
 
+// If the backend rejects our token (expired / invalid / signed differently),
+// clear the stale session and land on the login screen instead of failing
+// every request with a raw 401.
+axios.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401) {
+      localStorage.removeItem('synco_token');
+      localStorage.removeItem('synco_user');
+      delete axios.defaults.headers.common['Authorization'];
+      if (window.location.pathname !== '/login') {
+        window.location.assign('/login');
+      }
+    }
+    return Promise.reject(err);
+  }
+);
+
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
